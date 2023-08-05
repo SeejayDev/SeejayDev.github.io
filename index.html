@@ -4,130 +4,123 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Lato&family=Open+Sans:wght@400;500&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@300&family=Sacramento&family=Parisienne&display=swap" rel="stylesheet">
+  <script>
+    function shuffle(array) {
+      let currentIndex = array.length,  randomIndex;
 
-  <style>
-    .header1 {
-      font-family: 'Montserrat', sans-serif;
+      // While there remain elements to shuffle.
+      while (currentIndex != 0) {
+
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex], array[currentIndex]];
+      }
+
+      return array;
     }
 
-    .cursive {
-      font-family: 'Dancing Script', cursive;
+    function createArray(len) {
+      var newArr = []
+      for (let i = 0; i < len; i++) {
+        newArr.push(i+1)
+      }
+
+      return newArr
     }
 
-    .cursive2 {
-      font-family: 'Great Vibes', cursive;
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+      var pageForm = document.getElementById("form-generate")
 
-    .poppins {
-      font-family: 'Poppins', sans-serif;
-    }
+      pageForm.addEventListener("submit", (e) => {
+        e.preventDefault()
 
-    .open-sans {
-      font-family: 'Open Sans', sans-serif;
-    }
+        const formData = new FormData(e.target)
+        const payload = Object.fromEntries(formData)
+        const { numberOfPeople, numberPerGroup } = payload
+        
+        if (numberPerGroup > numberOfPeople) {
+          alert(`How the heck do I split ${numberOfPeople} into groups with ${numberPerGroup} people???`)
+          return
+        }
 
-    .lato {
-      font-family: 'Lato', sans-serif;
-    }
-  </style>
+        // create the array
+        var arrayOfPeople = createArray(numberOfPeople)
+        shuffle(arrayOfPeople)
+
+        // generate the groups
+        var arrayOfGroups = []
+        var remainingPeople = arrayOfPeople.length
+        var index = 0
+        while (remainingPeople >= numberPerGroup) {
+          var newGroup = []
+          for (let i = 0; i < numberPerGroup; i++) {
+            newGroup.push(arrayOfPeople[index])
+            remainingPeople--
+            index++
+          }
+          arrayOfGroups.push(newGroup)
+        }
+
+        var arrayOfExtras = []
+        for (let i = 0; i < remainingPeople; i++) {
+          indexFromBack = arrayOfPeople.length - 1 - i
+          arrayOfExtras.push(arrayOfPeople[indexFromBack])
+        }
+
+        console.log(arrayOfPeople)
+        console.log(arrayOfGroups)
+
+        var groupsDiv = document.getElementById("container-groups")
+        var groupsHTML = ""
+        for (let i = 0; i < arrayOfGroups.length; i++) {
+          groupsHTML += `
+            <div class="flex shadow-md items-center justify-between font-medium text-lg text-white bg-purple-600 rounded-md py-2 px-4">
+              <p>Player ${arrayOfGroups[i][0]}</p>
+              <p>+</p>
+              <p>Player ${arrayOfGroups[i][1]}</p>
+            </div>
+          `
+        }
+        groupsDiv.innerHTML = groupsHTML
+
+        var extrasDiv = document.getElementById("container-extras")
+        var extrasHTML = ""
+        for (let i = 0; i < arrayOfExtras.length; i++) {
+          extrasHTML += `<p class="font-bold text-purple-600">Player ${arrayOfExtras[i]}</p>`
+        }
+        extrasDiv.innerHTML = extrasHTML
+      })
+    })
+  </script>
 </head>
 
-<body class="">
-  <div class="flex flex-col items-center">
-    <section class="h-screen flex flex-col items-center pb-8">
-      <img src="images/headerimg.png" class="w-4/5" />
+<body>
+  <div class="px-2 w-full mx-auto max-w-xs mt-8">
+    <p class="font-bold text-6xl text-purple-600 text-center">GROOP</p>
+    
+    <form id="form-generate">
+      <div class="flex flex-col mt-4">
+        <input required type="number" class="border-2 rounded-md p-2 text-center" placeholder="How many people?" name="numberOfPeople"/>
+        <input required type="number" class="border-2 rounded-md p-2 text-center mt-2" value="2" readonly placeholder="How many per group?" name="numberPerGroup"/>
   
-      <p style="font-family: 'Parisienne', cursive;" class="text-5xl text-gray-300 mt-12 pr-4">The Wedding of</p>
-  
-      <div class="space-y-2 flex flex-col items-center mt-8">
-        <p class="lato font-medium text-4xl" style="letter-spacing: 0.3em;">SHAMEEL</p>
-        <p class="cursive font-bold text-3xl">and</p>
-        <p class="lato font-medium text-4xl"style="letter-spacing: 0.3em;">ADREENA</p>
+        <input class="border-2 cursor-pointer border-purple-600 rounded-md mt-4 py-2 font-bold text-purple-600" type="submit" />
       </div>
+    </form>
 
-      <div class="flex-1"></div>
-  
-      <div class="text-center py-12">
-        <p class="cursive2 font-bold text-3xl">4 June 2023</p>
-        <p class="poppins font-medium tracking-widest mt-4">#ShaAdFinallyHalal</p>
-      </div>
-    </section>
+    <div class="mt-4">
+      <p class="font-bold text-lg">Groups:</p>
 
-    <section class="flex flex-col items-center px-4 text-sm py-8 text-center poppins font-medium space-y-6 sm:space-y-8 tracking-widest">
-      <img src="images/pg2header.png" class="h-12" />
-      
-      <p>With great pleasure, we</p>
+      <div class="mt-2 space-y-3" id="container-groups">-</div>
+    </div>
 
-      <div class="text-center uppercase font-bold sm:text-xl">
-        <p>Ahmad Rashdan Bin Ghiathuddin</p>
-        <p>&</p>
-        <p>Nazwin Adilah Binti Nasaruddin</p>
-      </div>
+    <div class="mt-4">
+      <p class="font-bold text-lg">Extras:</p>
 
-      <p class=" sm:text-base text-sm">
-        Cordially invite you Dato/Datin/Mr/Mrs/Miss to the wedding of our beloved daughter
-      </p>
-
-      <div class="lato text-base sm:text-xl uppercase" style="letter-spacing: 0.3em;">
-        <p>Puteri Nur Adreena Binti Ahmad Rashdan</p>
-        <p class="cursive lowercase tracking-normal">and</p>
-        <p>Shameel Bin Ami Shamril</p>
-      </div>
-
-      <img src="images/pg2img.png" class="w-28" />
-
-      <div class="space-y-6 flex-1 sm:text-base text-sm">
-        <div>
-          <p class="font-bold">Date:</p>
-          <p>04 June 2023</p>
-        </div>
-
-        <div>
-          <p class="font-bold">Time:</p>
-          <p>12:30 PM - 4.00 PM</p>
-        </div>
-
-        <div>
-          <p class="font-bold">Location:</p>
-          <p>Dewan Persatuan Kebajikan</p>
-          <p>Gombak Setia PKGS</p>
-          <p>Jalan Sekolah, Gombak Setia</p>
-          <p>53100 Kuala Lumpur, Selangor</p>
-          
-          <div class="flex items-center justify-center mt-2 space-x-2">
-            <a href="https://waze.com/ul/hw2866d423">
-              <div class="w-10 h-10 rounded-md overflow-hidden">
-                <img src="images/waze.png" class="object-cover" />
-              </div>
-            </a>
-
-            <a href="https://goo.gl/maps/VBkdA2ppbBnmPeNV7">
-              <div class="w-10 h-10 rounded-md overflow-hidden">
-                <img src="images/maps.jpg" class="object-cover" />
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="text-sm italic">
-        <p>"And We created you in pairs".</p>
-        <p>Quran 78:8</p>
-      </div>
-    </section>
-
-    <section class="flex flex-col items-center px-4 text-sm py-8 text-center poppins font-medium sm:space-y-8 tracking-widest">
-      <img src="images/pg3header.png" />
-
-      <img src="images/pg3itenary.png" class="w-full max-w-xs"/>
-
-      <div class="mt-8 pb-8">
-        <p>Let us share this big day as we unite our souls in a bond of love and devotion.</p>
-        <p>Your presence is the greatest gift of all.</p>
-      </div>
-    </section>
+      <div class="mt-2 space-y-3" id="container-extras">-</div>
+    </div>
   </div>
 </body>

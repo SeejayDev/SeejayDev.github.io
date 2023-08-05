@@ -40,8 +40,10 @@
 
         const formData = new FormData(e.target)
         const payload = Object.fromEntries(formData)
-        const { numberOfPeople, numberPerGroup } = payload
+        var { numberOfPeople, numberPerGroup } = payload
         
+        numberPerGroup = parseInt(numberPerGroup)
+        numberOfPeople = parseInt(numberOfPeople)
         if (numberPerGroup > numberOfPeople) {
           alert(`How the heck do I split ${numberOfPeople} into groups with ${numberPerGroup} people???`)
           return
@@ -71,8 +73,8 @@
           arrayOfExtras.push(arrayOfPeople[indexFromBack])
         }
 
-        console.log(arrayOfPeople)
-        console.log(arrayOfGroups)
+        //console.log(arrayOfPeople)
+        //console.log(arrayOfGroups)
 
         var groupsDiv = document.getElementById("container-groups")
         var groupsHTML = ""

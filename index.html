@@ -3,126 +3,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    function shuffle(array) {
-      let currentIndex = array.length,  randomIndex;
-
-      // While there remain elements to shuffle.
-      while (currentIndex != 0) {
-
-        // Pick a remaining element.
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-          array[randomIndex], array[currentIndex]];
-      }
-
-      return array;
-    }
-
-    function createArray(len) {
-      var newArr = []
-      for (let i = 0; i < len; i++) {
-        newArr.push(i+1)
-      }
-
-      return newArr
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      var pageForm = document.getElementById("form-generate")
-
-      pageForm.addEventListener("submit", (e) => {
-        e.preventDefault()
-
-        const formData = new FormData(e.target)
-        const payload = Object.fromEntries(formData)
-        var { numberOfPeople, numberPerGroup } = payload
-        
-        numberPerGroup = parseInt(numberPerGroup)
-        numberOfPeople = parseInt(numberOfPeople)
-        if (numberPerGroup > numberOfPeople) {
-          alert(`How the heck do I split ${numberOfPeople} into groups with ${numberPerGroup} people???`)
-          return
-        }
-
-        // create the array
-        var arrayOfPeople = createArray(numberOfPeople)
-        shuffle(arrayOfPeople)
-
-        // generate the groups
-        var arrayOfGroups = []
-        var remainingPeople = arrayOfPeople.length
-        var index = 0
-        while (remainingPeople >= numberPerGroup) {
-          var newGroup = []
-          for (let i = 0; i < numberPerGroup; i++) {
-            newGroup.push(arrayOfPeople[index])
-            remainingPeople--
-            index++
-          }
-          arrayOfGroups.push(newGroup)
-        }
-
-        var arrayOfExtras = []
-        for (let i = 0; i < remainingPeople; i++) {
-          indexFromBack = arrayOfPeople.length - 1 - i
-          arrayOfExtras.push(arrayOfPeople[indexFromBack])
-        }
-
-        //console.log(arrayOfPeople)
-        //console.log(arrayOfGroups)
-
-        var groupsDiv = document.getElementById("container-groups")
-        var groupsHTML = ""
-        for (let i = 0; i < arrayOfGroups.length; i++) {
-          groupsHTML += `
-            <div class="flex shadow-md items-center justify-between font-medium text-lg text-white bg-purple-600 rounded-md py-2 px-4">
-              <p>Player ${arrayOfGroups[i][0]}</p>
-              <p>+</p>
-              <p>Player ${arrayOfGroups[i][1]}</p>
-            </div>
-          `
-        }
-        groupsDiv.innerHTML = groupsHTML
-
-        var extrasDiv = document.getElementById("container-extras")
-        var extrasHTML = ""
-        for (let i = 0; i < arrayOfExtras.length; i++) {
-          extrasHTML += `<p class="font-bold text-purple-600">Player ${arrayOfExtras[i]}</p>`
-        }
-        extrasDiv.innerHTML = extrasHTML
-      })
-    })
-  </script>
+  <link rel="stylesheet" href="./css/global.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
   <div class="px-2 w-full mx-auto max-w-xs mt-8">
     <p class="font-bold text-6xl text-purple-600 text-center">GROOP</p>
+    <p class="text-center text-sm font-bold italic text-purple-600">A grouping app for badminton</p>
     
-    <form id="form-generate">
-      <div class="flex flex-col mt-4">
-        <input required type="number" class="border-2 rounded-md p-2 text-center" placeholder="How many people?" name="numberOfPeople"/>
-        <input required type="number" class="border-2 rounded-md p-2 text-center mt-2" value="2" readonly placeholder="How many per group?" name="numberPerGroup"/>
-  
-        <input class="border-2 cursor-pointer border-purple-600 rounded-md mt-4 py-2 font-bold text-purple-600" type="submit" />
-      </div>
-    </form>
-
-    <div class="mt-4">
-      <p class="font-bold text-lg">Groups:</p>
-
-      <div class="mt-2 space-y-3" id="container-groups">-</div>
+    <div class="flex items-center justify-center space-x-1 font-medium mt-8">
+      <p class="">What kind of</p>
+      <p class=" uppercase font-bold text-purple-600">groop</p>
+      <p class="">do you need?</p>
     </div>
 
-    <div class="mt-4">
-      <p class="font-bold text-lg">Extras:</p>
+    <div class="mt-4 space-y-2">
+      <a href="./quick.html" class="border-4 border-purple-600 rounded-md p-2 flex items-center space-x-2">
+        <div class="w-1/5 p-2 aspect-square text-purple-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full" viewBox="0 0 24 24"><path fill="currentColor" d="M15.18 10.94c.2-.44.32-.92.32-1.44C15.5 7.57 13.93 6 12 6c-.52 0-1 .12-1.44.32l4.62 4.62z"/><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 13c-2.32 0-4.45.8-6.14 2.12A7.957 7.957 0 0 1 4 12c0-1.85.63-3.55 1.69-4.9l2.86 2.86a3.47 3.47 0 0 0 2.99 2.99l2.2 2.2c-.57-.1-1.15-.15-1.74-.15zm6.31 1.9L7.1 5.69A7.902 7.902 0 0 1 12 4c4.42 0 8 3.58 8 8c0 1.85-.63 3.54-1.69 4.9z"/></svg>
+        </div>
+        <div class="flex-1">
+          <p class="font-bold">Quick Groop</p>
+          <ul class="list-disc ml-4 text-sm italic">
+            <li>No names</li>
+            <li>Enter no. of people and go</li>
+          </ul>
+        </div>
+      </a>
 
-      <div class="mt-2 space-y-3" id="container-extras">-</div>
+      <a href="./advanced.html" class="border-4 border-purple-600 rounded-md p-2 flex items-center space-x-2">
+        <div class="w-1/5 p-2 aspect-square text-purple-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full" viewBox="0 0 24 24"><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05c1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        </div>
+        <div class="flex-1">
+          <p class="font-bold">Advanced Groop</p>
+          <ul class="list-disc ml-4 text-sm italic">
+            <li>Enter player names</li>
+            <li>History tracking</li>
+            <li>Duplication prevention</li>
+          </ul>
+        </div>
+      </a>
     </div>
   </div>
 </body>

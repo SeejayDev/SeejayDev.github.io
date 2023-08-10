@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./css/global.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script type="text/javascript" src="./js/functions.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      var pageForm = document.getElementById("form-generate")
+
+      pageForm.addEventListener("submit", (e) => {
+        e.preventDefault()
+
+        const formData = new FormData(e.target)
+        const payload = Object.fromEntries(formData)
+        var { numberOfPeople, numberPerGroup } = payload
+        
+        numberPerGroup = parseInt(numberPerGroup)
+        numberOfPeople = parseInt(numberOfPeople)
+        
+        if (numberPerGroup > numberOfPeople) {
+          alert(`How the heck do I split ${numberOfPeople} into groups with ${numberPerGroup} people???`)
+          return
+        }
+
+        // create the array
+        var arrayOfPeople = createArray(numberOfPeople)
+        shuffle(arrayOfPeople)
+
+        // generate the groups
+        var arrayOfGroups = []
+        var remainingPeople = arrayOfPeople.length
+        var index = 0
+        while (remainingPeople >= numberPerGroup) {
+          var newGroup = []
+          for (let i = 0; i < numberPerGroup; i++) {
+            newGroup.push(arrayOfPeople[index])
+            remainingPeople--
+            index++
+          }
+          arrayOfGroups.push(newGroup)
+        }
+
+        var arrayOfExtras = []
+        for (let i = 0; i < remainingPeople; i++) {
+          indexFromBack = arrayOfPeople.length - 1 - i
+          arrayOfExtras.push(arrayOfPeople[indexFromBack])
+        }
+
+        //console.log(arrayOfPeople)
+        //console.log(arrayOfGroups)
+
+        var groupsDiv = document.getElementById("container-groups")
+        var groupsHTML = ""
+        for (let i = 0; i < arrayOfGroups.length; i++) {
+          groupsHTML += `
+            <div class="py-3 items-center justify-between text-center font-medium text-lg text-white bg-purple-600 rounded-md">
+              <p>Player ${arrayOfGroups[i][0]}</p>
+              <p>Player ${arrayOfGroups[i][1]}</p>
+            </div>
+          `
+        }
+        groupsDiv.innerHTML = groupsHTML
+
+        var extrasDiv = document.getElementById("container-extras")
+        var extrasHTML = ""
+        for (let i = 0; i < arrayOfExtras.length; i++) {
+          extrasHTML += `<p class="font-bold text-purple-600">Player ${arrayOfExtras[i]}</p>`
+        }
+        extrasDiv.innerHTML = extrasHTML
+      })
+    })
+  </script>
+</head>
+
+<body>
+  <div class="px-2 w-full mx-auto max-w-xs mt-8">
+    <a href="./">
+      <p class="font-bold text-6xl text-purple-600 text-center">GROOP</p>
+      <p class="text-center text-sm font-bold italic text-purple-600">A grouping app for badminton</p>
+    </a>
+    
+    <form id="form-generate" class="mt-8">
+      <div class="flex flex-col">
+        <input required type="number" class="border-2 rounded-md p-2 text-center" placeholder="How many people?" name="numberOfPeople"/>
+        <input required type="number" class="border-2 rounded-md p-2 text-center mt-2 hidden" value="2" readonly placeholder="How many per group?" name="numberPerGroup"/>
+  
+        <input class="border-2 cursor-pointer border-purple-600 rounded-md mt-4 py-2 font-bold text-purple-600" type="submit" />
+      </div>
+    </form>
+
+    <div class="mt-8">
+      <p class="font-bold text-lg">Extras:</p>
+
+      <div class="space-y-3 " id="container-extras">-</div>
+    </div>
+
+    <div class="mt-4">
+      <p class="font-bold text-lg">Groups:</p>
+
+      <div class="mt-2 gap-4 grid grid-cols-2" id="container-groups">-
+      </div>
+    </div>
+  </div>
+</body>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./css/global.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Scripts for interacting with the playerList and previousGroupList localStorage item -->
+  <script type="text/javascript" src="./js/playerListFunctions.js"></script>
+  <script type="text/javascript" src="./js/previousGroupListFunctions.js"></script>
+  <script type="text/javascript" src="./js/combinationFunctions.js"></script>
+  <script type="text/javascript" src="./js/functions.js"></script>
+  <script type="text/javascript" src="./js/groupingFunctions.js"></script>
+
+  <script>
+    // function to get new player name
+    function addName() {
+      var newNameInput = document.getElementById("input-player-name")
+      var newName = newNameInput.value
+
+      if (newName && newName.trim() !== "") {
+        addToPlayerList(newName)
+        newNameInput.value = ""
+      }
+    }
+
+    function doClearHistory() {
+      var confirmAction = confirm("Are you sure you want to clear all grouping history?")
+
+      if (confirmAction) {
+        clearPreviousGroupList()
+        localStorage.removeItem("extraPlayer")
+      }
+    }
+
+    // function to generate the groups
+    function doGrouping() {
+      // create the array
+      var numberPerGroup = 2
+      var arrayOfPlayers = fetchPlayerList()
+      var maxCombinations = getMaxGroupCombinations(arrayOfPlayers.length)
+
+      var noMoreCombinations = false
+      var duplicateExists = true
+      var groups, extras = null
+      while (!noMoreCombinations && duplicateExists) {
+        // build the array of groups from localstorage player list
+        var { arrayOfGroups, arrayOfExtras } = generateGroups(arrayOfPlayers, numberPerGroup)
+
+        // check if any of the generated groups are duplicated
+        var previousGroups = fetchPreviousGroupList()
+        for (let i = 0; i < arrayOfGroups.length; i++) {
+          let newGroup = arrayOfGroups[i]
+          
+          let newGroupString = JSON.stringify(newGroup)
+          let prevGroupsString = JSON.stringify(previousGroups)
+          duplicateExists = prevGroupsString.includes(newGroupString)
+
+          if (duplicateExists) {
+            break;
+          }
+        }
+
+        // check if the extra player is repeated
+        var consecutiveExtra = false
+        if (arrayOfExtras.length > 0) {
+          consecutiveExtra = arrayOfExtras[0] === localStorage.getItem("extraPlayer")
+        }
+
+        if (duplicateExists) {
+          // if there is duplicate, check if combinations are still possible
+          var numOfGroupsNeeded = arrayOfGroups.length
+          var numOfGroupsGenerated = previousGroups.length
+          noMoreCombinations = (maxCombinations - numOfGroupsGenerated) < numOfGroupsNeeded
+        } else {
+          if (!consecutiveExtra) {
+            // if no duplicates, add groups to list and render content
+            addToPreviousGroupList(arrayOfGroups)
+  
+            groups = arrayOfGroups
+            extras = arrayOfExtras
+            renderContent(groups, extras)
+  
+            // set previousExtra flag
+            if (arrayOfExtras.length > 0) {
+              localStorage.setItem("extraPlayer", arrayOfExtras[0])
+            }
+          }
+        }
+      }
+
+      if (noMoreCombinations) {
+        alert("No more combinations possible")
+      }
+    }
+
+    function renderContent(arrayOfGroups, arrayOfExtras) {
+      var groupsDiv = document.getElementById("container-groups")
+      var extrasDiv = document.getElementById("container-extras")
+
+      var groupsHTML = ""
+      var extrasHTML = ""
+
+      var lightColor = true
+      for (let i = 0; i < arrayOfGroups.length; i++) {
+        groupsHTML += `
+          <div class="p-3 w-full mt-3 ${i % 2 !== 0 ? "mb-6 ": "mb-3"} ${lightColor ? "bg-purple-600" : "bg-purple-900"} items-center justify-between font-medium shadow-lg uppercase text-white  rounded-md relative">
+            <p>${arrayOfGroups[i][0]}</p>
+            <p>${arrayOfGroups[i][1]}</p>
+
+            ${i % 2 !== 0 ? `
+              <div class="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2 pb-2">
+                <div class="${lightColor ? "bg-purple-600" : "bg-purple-900"} w-16 h-16 p-3 rounded-full border-8 border-white flex items-center justify-center z-20">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full" viewBox="0 0 24 24"><path fill="currentColor" d="m19.05 21.6l-2.925-2.9l-2.2 2.2l-.7-.7q-.575-.575-.575-1.425t.575-1.425l4.225-4.225q.575-.575 1.425-.575t1.425.575l.7.7l-2.2 2.2l2.9 2.925q.3.3.3.7t-.3.7l-1.25 1.25q-.3.3-.7.3t-.7-.3ZM22 5.9L10.65 17.25l.125.1q.575.575.575 1.425t-.575 1.425l-.7.7l-2.2-2.2l-2.925 2.9q-.3.3-.7.3t-.7-.3L2.3 20.35q-.3-.3-.3-.7t.3-.7l2.9-2.925l-2.2-2.2l.7-.7q.575-.575 1.425-.575t1.425.575l.1.125L18 1.9h4v4ZM6.95 10.85L2 5.9v-4h4l4.95 4.95l-4 4Z"/></svg>
+                </div>
+              </div>
+            `: ""}
+
+            <div class="rounded-full border-8 border-white absolute w-20 h-20 -right-1 top-1 flex items-center justify-center opacity-70 rotate-12">
+              <p class="font-bold text-2xl">${i+1}</p>
+            </div>
+          </div>
+        `
+        if (i % 2 !== 0) {
+          lightColor = !lightColor
+        }
+      }
+
+      for (let i = 0; i < arrayOfExtras.length; i++) {
+        extrasHTML += `<p class="font-bold text-purple-600 uppercase">${arrayOfExtras[i]}</p>`
+      }
+
+      groupsDiv.innerHTML = groupsHTML
+      extrasDiv.innerHTML = extrasHTML
+    }
+
+    // On page load, check if there is an existing player list
+    // as well as the previous groups list
+    document.addEventListener("DOMContentLoaded", () => {
+      displayPlayerList()
+      fetchPreviousGroupList()
+
+      // enable option to press enter to submit name
+      document.getElementById("input-player-name").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("btn-submit").click();
+        }
+      });
+    })
+  </script>
+</head>
+
+<body class="mb-12">
+  <div class="px-6 w-full mx-auto max-w-sm mt-8">
+    <a href="./" >
+      <p class="font-bold text-6xl text-purple-600 text-center">GROOP</p>
+      <p class="text-center text-sm font-bold italic text-purple-600 mb-8">A grouping app for badminton</p>
+    </a>
+
+    <div class="flex items-center justify-between mt-4">
+      <p class="uppercase font-bold text-2xl">List of players</p>
+      <div class="text-xl font-bold bg-purple-600 px-3 py-1 text-white rounded-md flex items-center justify-center" id="player-count">0</div>
+    </div>
+    <div class="mt-2 text-purple-600 max-h-64 w-full hidden overflow-x-hidden overflow-y-auto px-4 py-1 shadow-lg border border-purple-600 rounded-lg" id="container-players">
+    </div>
+
+    <div class="flex mt-4 items-center w-full space-x-2">
+      <input required type="text" class="border-2 rounded-md px-2 text-center flex-1 h-10" placeholder="Player Name" id="input-player-name" />
+      <button class="cursor-pointer border-2 border-green-700 rounded-md p-2 text-green-600 w-10 aspect-square" onclick="addName()" id="btn-submit">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full" viewBox="0 0 24 24"><path fill="currentColor" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z"/></svg>
+      </button>
+    </div>
+
+    <button class="border-2 w-full cursor-pointer border-purple-600 rounded-md mt-4 py-2 font-bold text-purple-600" onclick="doGrouping()">
+      GROOP
+    </button>
+
+    <div class="mt-8">
+      <div class="flex items-center justify-between">
+        <p class="font-bold text-xl">EXTRAS:</p>
+      </div>
+
+      <div class="space-y-3" id="container-extras">-</div>
+    </div>
+
+    <div class="mt-4">
+      <div class="flex items-center justify-between">
+        <p class="font-bold text-xl">GROUPS:</p>
+
+        <div>
+          <button class="border-purple-600 text-purple-600 border-2 rounded-md px-3 py-1 font-bold text-sm" onclick="doClearHistory()">Clear History</button>
+        </div>
+      </div>
+      <div class="mt-2 relative" id="container-groups">-</div>
+    </div>
+  </div>
+</body>

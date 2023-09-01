@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
+  />
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+  <script>
+    var cardValues = [8, 4, 5, 6, 2]
+    for (let i = 0; i < cardValues.length - 2; i++) {
+      for (let j = i + 1; j < cardValues.length - 1; j++) {
+        for (let k = i + 2; k < cardValues.length; k++) {
+          console.log(i, j, k)
+        }
+      }
+    }
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const swiper = new Swiper('.swiper', {
+        // Optional parameters
+        direction: 'vertical',
+        loop: true,
+
+        mousewheel: {
+          invert: false,
+        },
+  
+        // Navigation arrows
+        navigation: {
+          nextEl: '.card1-next',
+          prevEl: '.card1-prev',
+        },
+      });
+    })
+  </script>
+</head>
+
+<body class="mx-auto container p-4">
+  <div class="justify-center w-fit">
+    <p class="text-5xl font-bold">Ngauculator</p>
+    <p class="text-right pr-8 -mt-1 font-medium">A ngau assistance tool</p>
+  </div>
+
+  <div class="grid grid-cols-5 gap-8 mt-12">
+    <div class="w-full aspect-[5/7] bg-gray-200 rounded-lg">
+      <!-- Slider main container -->
+      <div class="swiper w-full h-full relative">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper w-full h-full">
+          <!-- Slides -->
+          <div class="swiper-slide flex items-center justify-center">
+            <p class="text-9xl font-bold text-red-600">A</p>
+          </div>
+          <div class="swiper-slide flex items-center justify-center">
+            <p class="text-9xl font-bold text-red-600">1</p>
+          </div>
+          <div class="swiper-slide flex items-center justify-center">
+            <p class="text-9xl font-bold text-red-600">2</p>
+          </div>
+          <div class="swiper-slide flex items-center justify-center">
+            <p class="text-9xl font-bold text-red-600">3</p>
+          </div>
+        </div>
+
+        <!-- If we need navigation buttons -->
+        <div class="card1-prev absolute">
+          <p>Prev</p>
+        </div>
+        <div class="card1-next"></div>
+      </div>
+    </div>
+    <div class="w-full aspect-[5/7] bg-gray-200 rounded-lg">
+
+    </div>
+    <div class="w-full aspect-[5/7] bg-gray-200 rounded-lg">
+
+    </div>
+    <div class="w-full aspect-[5/7] bg-gray-200 rounded-lg">
+
+    </div>
+    <div class="w-full aspect-[5/7] bg-gray-200 rounded-lg">
+
+    </div>
+  </div>
+</body>

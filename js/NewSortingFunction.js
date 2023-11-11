@@ -1,35 +1,63 @@
 let players = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
 
+// the number of unique partners that each player could have
+let numberOfRounds = players.length % 2 === 0 ? players.length - 1 : players.length;
+
+// initialize the list of generated groups
 var previousGroups = [];
-let numberOfRounds = players.length % 2 === 0 ? players.length - 1 : players.length
+
+// generate all possible rounds
 for (let index = 0; index < numberOfRounds; index++) {
+  // initialize the list of pairs
   let generatedPairs = [];
+
+  // create a copy of the player list to be manipulated
   let playerList = [...players];
 
+  // form pairs as long as there are players available
   while (playerList.length > 2) {
-    let tempGroup = [];
-
+    // grab the first player in the list to form part of the pair
+    let tempPair = [];
     let player1 = playerList.shift();
-    tempGroup.push(player1);
+    tempPair.push(player1);
 
+    // create a flag to determine if the first player in the list can form a unique pair or not.
     let groupFormed = false
-    for (let i = 0; i < playerList.length; i++) {
-      tempGroup[1] = playerList[i];
 
-      let tempGroupString = JSON.stringify(tempGroup);
+    // iterate through the remaining players
+    // GOAL: find a partner that the person has not played with
+    for (let i = 0; i < playerList.length; i++) {
+      // add the iterated player to the pair
+      tempPair[1] = playerList[i];
+
+      // sort the players' names to keep the order of appearance consistent across rounds
+      tempPair.sort()
+
+      // convert the pair into a string for comparison
+      let tempPairString = JSON.stringify(tempPair);
       let previousGroupsString = JSON.stringify(previousGroups);
-      if (!previousGroupsString.includes(tempGroupString)) {
-        // if unique, add to list
-        generatedPairs.push(tempGroup);
+
+      console.log("Pair generated: " + tempPairString)
+      console.log(previousGroupsString.includes(tempPairString))
+      
+      // check if the pair has been formed before
+      if (!previousGroupsString.includes(tempPairString)) {
+        // if the pair is unique, add them to the round's list of pairs
+        generatedPairs.push(tempPair);
+
+        // remove the second player from the list of players
         playerList.splice(i, 1);
+
+        // mark the formation of the pair
         groupFormed = true
+
+        // stop iterating the list, exit the loop
         break;
-      } else {
-        continue
       }
+      console.log(playerList)
     }
 
-    // TODO: check if better way to handle this
+    // If the player has no possible partners, push them to the back of the list
     if (!groupFormed) {
       playerList.push(player1)
     }

@@ -1,4 +1,4 @@
-let players = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+let players = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
 // the number of unique partners that each player could have
 let numberOfRounds = players.length % 2 === 0 ? players.length - 1 : players.length;
@@ -36,9 +36,6 @@ for (let index = 0; index < numberOfRounds; index++) {
       // convert the pair into a string for comparison
       let tempPairString = JSON.stringify(tempPair);
       let previousGroupsString = JSON.stringify(previousGroups);
-
-      console.log("Pair generated: " + tempPairString)
-      console.log(previousGroupsString.includes(tempPairString))
       
       // check if the pair has been formed before
       if (!previousGroupsString.includes(tempPairString)) {
@@ -54,7 +51,6 @@ for (let index = 0; index < numberOfRounds; index++) {
         // stop iterating the list, exit the loop
         break;
       }
-      console.log(playerList)
     }
 
     // If the player has no possible partners, push them to the back of the list
